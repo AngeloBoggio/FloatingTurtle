@@ -6,6 +6,9 @@ const port = 3001;
 
 connectDB();
 
+// Middleware to parse incoming JSON requests
+app.use(express.json());
+
 app.get("/", (req, res) => {
   res.send("Hello World, Time to make an auth app");
 });

@@ -24,6 +24,22 @@ const userSchema = new mongoose.Schema(
       required: true,
       minlength: 6,
     },
+    shoppingCart: {
+      type: [
+        {
+          product: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Product",
+            required: true,
+          },
+          quantity: {
+            type: Number,
+            required: true,
+            min: 1,
+          },
+        },
+      ],
+    },
   },
   {
     timestamps: true,
