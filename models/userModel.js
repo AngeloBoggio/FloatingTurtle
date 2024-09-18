@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const paymentMethodSchema = require("./paymentModel.js");
 const bcrypt = require("bcrypt");
 const saltRounds = 10;
 
@@ -39,6 +40,10 @@ const userSchema = new mongoose.Schema(
           },
         },
       ],
+    },
+    paymentMethods: {
+      type: [paymentMethodSchema],
+      default: [],
     },
   },
   {
