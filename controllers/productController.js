@@ -2,13 +2,15 @@ const Product = require("../models/productModel");
 
 const createProduct = async (req, res) => {
   try {
-    const { name, description, price, stock } = req.body;
+    const { name, description, category, price, stock, imageURL } = req.body;
 
     const newProduct = Product({
       name,
       description,
+      category,
       price,
       stock,
+      imageURL,
     });
 
     const savedProduct = await newProduct.save();
