@@ -18,6 +18,16 @@ const createProduct = async (req, res) => {
   }
 };
 
+const updateStock = async (req, res) => {
+  try{
+    const{name, stock} = req.body;
+
+  } catch {
+
+  }
+}
+
 module.exports = {
   createProduct,
+  updateStock,
 };
