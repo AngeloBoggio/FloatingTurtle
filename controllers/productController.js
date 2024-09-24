@@ -4,7 +4,16 @@ const createProduct = async (req, res) => {
   try {
     const { name, description, category, price, stock, imageURL } = req.body;
 
-    const newProduct = Product({
+    const existingProduct = await Product.findOne({ name });
+
+    if (existingProduct) {
+      // If the product exists, increase the stock
+      existingProduct.stock += stock; // Update stock amount
+      const updatedProduct = await existingProduct.save(); // Save updated product
+      return res.status(200).json(updatedProduct); // Respond with updated product
+    }
+
+    const newProduct = new Product({
       name,
       description,
       category,
@@ -21,13 +30,38 @@ const createProduct = async (req, res) => {
 };
 
 const updateStock = async (req, res) => {
-  try{
-    const{name, stock} = req.body;
+  try {
+    const { name, stock } = req.body;
+    const existingProduct = await Product.findOne({ name });
 
-  } catch {
+    // If the product doesn't exist
+    if (!existingProduct) {
+      return res.status(404).json({ message: "Product does not exist" });
+    }
 
+    // Ensure the stock doesn't go negative
+    if (existingProduct.stock < stock) {
+      return res
+        .status(400)
+        .json({ message: "Not enough in stock for purchase" });
+    }
+
+    // Subtract the stock
+    existingProduct.stock -= stock;
+    await existingProduct.save();
+
+    // Return success response
+    return res.status(200).json({
+      message: "Stock updated successfully",
+      product: existingProduct,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: "An error occurred while updating the stock",
+      error: error.message,
+    });
   }
-}
+};
 
 module.exports = {
   createProduct,

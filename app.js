@@ -12,7 +12,7 @@ app.use(express.json());
 
 // User related routes
 app.use("/usr", userRoutes);
-app.use("/api", productRoutes);
+app.use("/prod", productRoutes);
 
 app.listen(port, () => {
   console.log(`Listening on port ${port}`);
