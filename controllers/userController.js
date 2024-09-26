@@ -87,3 +87,21 @@ exports.addToCart = async (req, res) => {
       .json({ message: "Error adding product to cart", error: err });
   }
 };
+
+exports.getCart = async (req, res) => {
+  const { userId } = req.user._id;
+
+  try {
+    const user = await User.findById(userId).populate("shoppingCart.product");
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    res.status(200).json(user.shoppingCart);
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ message: "Error retrieving cart items", error: error.message });
+  }
+};
