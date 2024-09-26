@@ -13,7 +13,8 @@
     "express": "^4.19.2",
     "jsonwebtoken": "^9.0.2",
     "mongodb": "^6.9.0",
-    "mongoose": "^8.6.1"
+    "mongoose": "^8.6.1",
+    "side-channel": "^1.0.6"
   },
   "devDependencies": {
     "nodemon": "^3.1.4"

@@ -1,6 +1,7 @@
 const User = require("../models/userModel");
 const bcrypt = require("bcrypt");
 const { generateToken } = require("../utils/token");
+const Product = require("../models/productModel");
 
 exports.registerUser = async (req, res) => {
   const { username, email, password } = req.body;
@@ -43,12 +44,46 @@ exports.userSignIn = async (req, res) => {
     if (!isPasswordCorrect) {
       return res.status(401).json({ message: "Invalid credentials!" });
     }
-    const token = generateToken(existingUser.username);
+    const token = generateToken({
+      id: existingUser._id,
+      username: existingUser.username,
+    });
     res.status(200).json({ token });
   } catch (err) {
     console.log(err);
     res
       .status(500)
       .json({ message: "Something went wrong 😢", Error: err.message });
+  }
+};
+
+exports.addToCart = async (req, res) => {
+  const { productId } = req.body;
+  const userId = req.user._id; // Make sure this is being set by your authentication middleware
+
+  try {
+    const product = await Product.findById(productId);
+    if (!product) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    user.shoppingCart.push({
+      product: product._id,
+      quantity: 1,
+    });
+
+    await user.save();
+    res
+      .status(200)
+      .json({ message: "Product added to cart", cart: user.shoppingCart });
+  } catch (err) {
+    res
+      .status(500)
+      .json({ message: "Error adding product to cart", error: err });
   }
 };
