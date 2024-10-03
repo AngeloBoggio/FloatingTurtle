@@ -62,3 +62,5 @@ exports.updateStock = async (req, res) => {
     });
   }
 };
+
+exports.removeProduct = async (req, res) => {};

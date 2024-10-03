@@ -59,7 +59,7 @@ exports.userSignIn = async (req, res) => {
 
 exports.addToCart = async (req, res) => {
   const { productId } = req.body;
-  const userId = req.user._id; // Make sure this is being set by your authentication middleware
+  const userId = req.user._id;
 
   try {
     const product = await Product.findById(productId);
@@ -105,3 +105,37 @@ exports.getCart = async (req, res) => {
       .json({ message: "Error retrieving cart items", error: error.message });
   }
 };
+
+exports.removeFromCart = async (req, res) => {
+  const { productId } = req.body;
+  const user = req.user._id;
+  try {
+    const productIndex = user.shoppingCart.findIndex(
+      (item) => item.product.toString() === productId
+    );
+
+    if (productIndex === -1) {
+      return res.status(404).json({ message: "Product not found in the cart" });
+    }
+
+    user.shoppingCart.splice(productIndex, 1);
+
+    await user.save();
+    res.status(200).json({
+      message: "Product removed from the cart",
+      cart: user.shoppingCart,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      message: "Error removing product from cart",
+      error: error.message,
+    });
+  }
+};
+
+exports.signOut = async (req, res) => {};
+
+exports.checkout = async (req, res) => {};
+
+exports.wishlist = async (req, res) => {};
