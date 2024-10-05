@@ -48,7 +48,13 @@ exports.userSignIn = async (req, res) => {
       id: existingUser._id,
       username: existingUser.username,
     });
-    res.status(200).json({ token });
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      maxAge: 24 * 60 * 60 * 1000,
+      sameSite: "strict",
+    });
+    res.status(200).json({ message: "User signed in successfully" });
   } catch (err) {
     console.log(err);
     res
@@ -134,8 +140,49 @@ exports.removeFromCart = async (req, res) => {
   }
 };
 
-exports.signOut = async (req, res) => {};
+exports.signOut = (req, res) => {
+  try {
+    // Clear the token cookie
+    res.clearCookie("token", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+    });
 
-exports.checkout = async (req, res) => {};
+    // Send a success response
+    res.status(200).json({ message: "User signed out successfully" });
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ message: "Error signing out", error: error.message });
+  }
+};
+
+exports.checkout = async (req, res) => {
+  const userId = req.user._id;
+
+  try {
+    const user = await User.findById(userId).populate("shoppingCart.product");
+
+    if (!user || user.shoppingCart.length === 0) {
+      return res.status(400).json({ message: "Cart is empty!" });
+    }
+
+    let totalAmount = 0;
+    for (let item in user.shoppingCart) {
+      totatlAmount += item.Product.price * item.Product.quantity;
+    }
+
+    console.log(`Total price: $${totalAmount}`);
+
+    // next should be the payment processing using a payment util
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ message: "Error during checkout", error: error.message });
+  }
+};
 
 exports.wishlist = async (req, res) => {};

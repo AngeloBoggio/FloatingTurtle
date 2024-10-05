@@ -19,6 +19,7 @@ const userSchema = new mongoose.Schema(
       unique: true,
       trim: true,
       lowercase: true,
+      match: [/.+\@.+\..+/, "Please use a valid email address"],
     },
     password: {
       type: String,
@@ -40,6 +41,19 @@ const userSchema = new mongoose.Schema(
           },
         },
       ],
+      default: [],
+    },
+    wishlist: {
+      type: [
+        {
+          product: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Product",
+            required: true,
+          },
+        },
+      ],
+      default: [],
     },
     paymentMethods: {
       type: [paymentMethodSchema],
